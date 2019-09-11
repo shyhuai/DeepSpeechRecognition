@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
 import argparse, os
 import tensorflow as tf
@@ -30,7 +32,7 @@ logger.info('Configurations: %s', args)
 
 EXPERIMENT=args.logprefix
 NWORKERS=args.nworkers
-NDATATHREADS=16
+NDATATHREADS=32
 
 
 datasets = args.datasets.split(',')
