@@ -55,6 +55,7 @@ class Am():
             ([self.labels, self.outputs, self.input_length, self.label_length])
         self.ctc_model = Model(inputs=[self.labels, self.inputs,
             self.input_length, self.label_length], outputs=self.loss_out)
+        self.local_model = self.ctc_model
 
     def opt_init(self):
         opt = Adam(lr = self.lr, beta_1 = 0.9, beta_2 = 0.999, decay = 0.01, epsilon = 10e-8)

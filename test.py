@@ -9,6 +9,7 @@ from utils import decode_ctc, GetEditDistance
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 from utils import get_data, data_hparams
 data_args = data_hparams()
+data_args.data_path = './data/sp2chs/'
 train_data = get_data(data_args)
 
 
@@ -16,10 +17,12 @@ train_data = get_data(data_args)
 from model_speech.cnn_ctc import Am, am_hparams
 
 am_args = am_hparams()
+am_args.gpu_nums = 1
 am_args.vocab_size = len(train_data.am_vocab)
 am = Am(am_args)
 print('loading acoustic model...')
 am.ctc_model.load_weights('logs_am/model.h5')
+#am.ctc_model.load_weights('checkpoint/model_02.hdf5')
 
 # 2.语言模型-------------------------------------------
 from model_language.transformer import Lm, lm_hparams
