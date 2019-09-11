@@ -3,3 +3,5 @@
 *.pyc
 *.mdl
 *.wav
+logs_lm/model*
+logs_lm/tensorboard
