@@ -14,15 +14,25 @@ def data_hparams():
         # vocab
         data_type='train',
         data_path='data/',
-        thchs30=True,
-        aishell=True,
-        prime=True,
-        stcmd=True,
+        thchs30=False,
+        aishell=False,
+        prime=False,
+        stcmd=False,
         batch_size=1,
         data_length=10,
         shuffle=True)
     return params
 
+def assign_datasets(datasets, param):
+    for d in datasets:
+        if d == 'thchs30':
+            param.thchs30= True
+        elif d == 'aishell':
+            param.aishell = True
+        elif d == 'prime':
+            param.prime = True
+        elif d == 'stcmd':
+            param.stcmd = True
 
 class get_data():
     def __init__(self, args):
@@ -95,7 +105,7 @@ class get_data():
                 end = begin + self.batch_size
                 sub_list = shuffle_list[begin:end]
                 for index in sub_list:
-                    fbank = compute_fbank(self.data_path + self.wav_lst[index])
+                    fbank = compute_fbank(os.path.join(self.data_path, self.wav_lst[index]))
                     pad_fbank = np.zeros((fbank.shape[0] // 8 * 8 + 8, fbank.shape[1]))
                     pad_fbank[:fbank.shape[0], :] = fbank
                     label = self.pny2id(self.pny_lst[index], self.am_vocab)

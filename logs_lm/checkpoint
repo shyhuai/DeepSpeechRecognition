@@ -1,2 +1,2 @@
-model_checkpoint_path: "model_50"
-all_model_checkpoint_paths: "model_50"
+model_checkpoint_path: "thchs30multigpu_model_24"
+all_model_checkpoint_paths: "thchs30multigpu_model_24"

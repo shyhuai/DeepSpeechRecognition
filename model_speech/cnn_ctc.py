@@ -6,6 +6,7 @@ from keras import backend as K
 from keras.models import Model
 from keras.utils import multi_gpu_model
 import tensorflow as tf
+from settings import logger
 
 
 def am_hparams():
@@ -45,7 +46,9 @@ class Am():
         self.h7 = Dropout(0.2)(self.h7)
         self.outputs = dense(self.vocab_size, activation='softmax')(self.h7)
         self.model = Model(inputs=self.inputs, outputs=self.outputs)
-        self.model.summary()
+        #model_str = str(self.model.to_json())
+        #logger.info(model_str)
+        self.model.summary(print_fn=logger.info)
 
     def _ctc_init(self):
         self.labels = Input(name='the_labels', shape=[None], dtype='float32')
@@ -58,11 +61,11 @@ class Am():
         self.local_model = self.ctc_model
 
     def opt_init(self):
-        opt = Adam(lr = self.lr, beta_1 = 0.9, beta_2 = 0.999, decay = 0.01, epsilon = 10e-8)
-        if self.gpu_nums > 1:
-            self.ctc_model=multi_gpu_model(self.ctc_model,gpus=self.gpu_nums)
-        self.ctc_model.compile(loss={'ctc': lambda y_true, output: output}, optimizer=opt)
-
+        #opt = Adam(lr = self.lr, beta_1 = 0.9, beta_2 = 0.999, decay = 0.01, epsilon = 10e-8)
+        #if self.gpu_nums > 1:
+        #    self.ctc_model=multi_gpu_model(self.ctc_model,gpus=self.gpu_nums)
+        #self.ctc_model.compile(loss={'ctc': lambda y_true, output: output}, optimizer=opt)
+        pass
 
 
 
