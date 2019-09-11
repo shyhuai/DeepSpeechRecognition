@@ -4,5 +4,6 @@
 *.mdl
 *.wav
 *swp
+*.log
 logs_lm/model*
 logs_lm/tensorboard
