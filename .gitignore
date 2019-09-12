@@ -6,6 +6,9 @@
 *swp
 *.log
 logs
+checkpoit*
 logs_lm/model*
+logs_lm/*model*
 logs_lm/tensorboard
 logs_am/checkpoit*
+logs_am/*model*
