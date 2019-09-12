@@ -5,5 +5,7 @@
 *.wav
 *swp
 *.log
+logs
 logs_lm/model*
 logs_lm/tensorboard
+logs_am/checkpoit*

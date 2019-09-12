@@ -253,3 +253,13 @@ def decode_ctc(num_result, num2word):
 	for i in r1:
 		text.append(num2word[i])
 	return r1, text
+
+def create_path(relative_path):
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, relative_path)
+    if not os.path.isdir(filename):
+        try:
+            os.makedirs(filename)
+        except:
+            pass
+

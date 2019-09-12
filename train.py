@@ -1,19 +1,23 @@
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 import os
-import argparse, os
+import argparse
 import tensorflow as tf
+import keras
 from keras.optimizers import Adam
-from utils import get_data, data_hparams, assign_datasets
+from utils import get_data, data_hparams, assign_datasets, create_path
 from keras.callbacks import ModelCheckpoint
 from keras.utils import multi_gpu_model
 import logging
 from settings import logger, formatter
-from callbacks import LossAndErrorPrintingCallback
+from callbacks import LossAndErrorPrintingCallback, lr_scheduler
 
 if True:
     parser = argparse.ArgumentParser(description="Acoustic model trainer")
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--log', type=str, default='train.log')
     parser.add_argument('--nworkers', type=int, default=4, help='# of GPUs')
+    parser.add_argument('--initial_epoch', type=int, default=0, help='Set start epoch')
     parser.add_argument('--datasets', type=str, default='aishell', help='Specify the dataset for training: thchs30,aishell,prime,stcmd')
     parser.add_argument('--logprefix', type=str, default='exp1', help='Specify the log prefix')
     parser.add_argument('--data_dir', type=str, default='/tmp/shshi/sp2chs/', help='Specify the data root path')
@@ -30,7 +34,7 @@ logger.info('Configurations: %s', args)
 
 EXPERIMENT=args.logprefix
 NWORKERS=args.nworkers
-NDATATHREADS=16
+NDATATHREADS=32
 
 
 datasets = args.datasets.split(',')
@@ -85,26 +89,26 @@ logger.info('# of samples: %d', len(train_data.wav_lst))
 logger.info('mini-batch size: %d', train_data.batch_size)
 logger.info('# of iterations per epoch: %d', batch_num)
 
+create_path(args.saved_dir)
+
 # checkpoint
 #ckpt = "model_{epoch:02d}-{val_acc:.2f}.hdf5"
 #ckpt = "model_{epoch:02d}.hdf5"
 #ckpt = "primeonly_model_{epoch:02d}.hdf5"
 ckpt = "%s_model_{epoch:02d}.hdf5" % EXPERIMENT
-checkpoint = ModelCheckpoint(os.path.join(args.saved_dir, ckpt), monitor='val_loss', save_weights_only=True, verbose=2, save_best_only=True)
+checkpoint = ModelCheckpoint(os.path.join(args.saved_dir, ckpt), monitor='val_loss', save_weights_only=True, verbose=2, save_best_only=False)
 callbacks = [
         checkpoint, 
-        LossAndErrorPrintingCallback(batch_num), 
+        LossAndErrorPrintingCallback(batch_num, am.ctc_model), 
+        keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1),
         ]
 
 batch = train_data.get_am_batch()
 dev_batch = dev_data.get_am_batch()
 
-ctc_model.fit_generator(batch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True, validation_data=dev_batch, validation_steps=batch_num_of_dev)
+ctc_model.fit_generator(batch, initial_epoch=args.initial_epoch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True, validation_data=dev_batch, validation_steps=batch_num_of_dev)
 
-model_json = am.model.to_json()
-with open("logs_am/%s_model.json" % EXPERIMENT, "w") as json_file:
-    json_file.write(model_json)
-am.ctc_model.save_weights('logs_am/%s_model.h5' % EXPERIMENT)
+am.ctc_model.save_weights('%s/%s_model.h5' % (args.saved_dir, EXPERIMENT))
 
 
 # 2.语言模型训练-------------------------------------------
@@ -128,7 +132,8 @@ with tf.Session(graph=lm.graph, config=tf.ConfigProto(log_device_placement=True)
     merged = tf.summary.merge_all()
     sess.run(tf.global_variables_initializer())
     add_num = 0
-    if os.path.exists('logs_lm/checkpoint'):
+    #if os.path.exists('logs_lm/checkpoint'):
+    if os.path.exists('%s/checkpoint'%args.saved_dir):
         print('loading language model...')
         latest = tf.train.latest_checkpoint('logs_lm')
         add_num = int(latest.split('_')[-1])
@@ -146,5 +151,6 @@ with tf.Session(graph=lm.graph, config=tf.ConfigProto(log_device_placement=True)
                 rs=sess.run(merged, feed_dict=feed)
                 #writer.add_summary(rs, k * batch_num + i)
         logger.info('epochs: %d%s%f', k+1, ': average loss = ', total_loss/batch_num)
-    saver.save(sess, 'logs_lm/%s_model_%d' % (EXPERIMENT, epochs + add_num))
+    #saver.save(sess, 'logs_lm/%s_model_%d' % (EXPERIMENT, epochs + add_num))
+    saver.save(sess, '%s/%s_model_%d' % (args.saved_dir, EXPERIMENT, epochs + add_num))
     #writer.close()

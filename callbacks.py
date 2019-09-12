@@ -3,11 +3,12 @@ from settings import logger
 import numpy as np
 
 class LossAndErrorPrintingCallback(keras.callbacks.Callback):
-    def __init__(self, num_batchs_per_epoch):
+    def __init__(self, num_batchs_per_epoch, model):
         super().__init__()
         self.num_batchs_per_epoch = num_batchs_per_epoch
         self.display = 40
         self.avg_loss = 0.0
+        self.model = model
         self.val_losses = []
 
     def on_train_batch_end(self, batch, logs=None):
@@ -26,3 +27,11 @@ class LossAndErrorPrintingCallback(keras.callbacks.Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         logger.info('The average loss for epoch {} is {:7.2f}.'.format(epoch, logs['loss']))
+
+
+def lr_scheduler(epoch, lr):
+    decay_rate = 0.1
+    decay_step = 50
+    if epoch % decay_step == 0 and epoch > 0:
+        return lr * decay_rate
+    return lr

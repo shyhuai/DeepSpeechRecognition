@@ -3,12 +3,13 @@ import argparse, os
 import tensorflow as tf
 from keras.optimizers import Adam
 from keras import backend as K
+import keras
 from utils import get_data, data_hparams, assign_datasets
 from keras.callbacks import ModelCheckpoint
 from keras.utils import multi_gpu_model
 import logging
 from settings import logger, formatter
-from callbacks import LossAndErrorPrintingCallback
+from callbacks import LossAndErrorPrintingCallback, lr_scheduler
 import horovod.keras as hvd
 
 if True:
@@ -98,6 +99,7 @@ callbacks = [
         hvd.callbacks.BroadcastGlobalVariablesCallback(0),
         hvd.callbacks.MetricAverageCallback(),
         LossAndErrorPrintingCallback(batch_num), 
+        keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1),
         ]
 
 if hvd.rank() == 0:
@@ -112,6 +114,8 @@ ctc_model.fit_generator(batch, steps_per_epoch=batch_num, epochs=epochs, verbose
 
 if hvd.rank() == 0:
     am.ctc_model.save_weights('logs_am/%s_model.h5' % EXPERIMENT)
+    score = hvd.allreduce(ctc_model.evaluate_generator(dev_data, batch_num_of_dev, workers=1))
+    logger.info('Test loss: %s', score)
 
 
 # 2.语言模型训练-------------------------------------------

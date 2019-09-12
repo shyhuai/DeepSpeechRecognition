@@ -3,20 +3,23 @@ import os
 import difflib
 import tensorflow as tf
 import numpy as np
-from utils import decode_ctc, GetEditDistance
+from utils import decode_ctc, GetEditDistance, assign_datasets
 from keras.models import model_from_json
 
+EXPERIMENT='thchs30-2'
+DATASETS='thchs30'
+saved_dir='./checkpoint2'
+#EXPERIMENT='thchs30multigpu'
 
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
+datasets = DATASETS.split(',')
 from utils import get_data, data_hparams
 data_args = data_hparams()
-data_args.data_path = './data/sp2chs/'
-data_args.thchs30 = True
+data_args.data_path = '/home/comp/15485625/data/speech/sp2chs'
 data_args.data_length = None
+assign_datasets(datasets, data_args)
 train_data = get_data(data_args)
 
-#EXPERIMENT='thchs30'
-EXPERIMENT='thchs30multigpu'
 
 # 1.声学模型-----------------------------------
 from model_speech.cnn_ctc import Am, am_hparams
@@ -27,7 +30,8 @@ am_args.is_training = True
 am_args.vocab_size = len(train_data.am_vocab)
 am = Am(am_args)
 print('loading acoustic model...')
-am.ctc_model.load_weights('logs_am/%s_model.h5'%EXPERIMENT)
+am.ctc_model.load_weights('%s/%s_model.h5'%(saved_dir, EXPERIMENT))
+#am.ctc_model.load_weights('checkpoint2/%s_model_56.hdf5'%EXPERIMENT)
 
 # 2.语言模型-------------------------------------------
 from model_language.transformer import Lm, lm_hparams
@@ -42,7 +46,8 @@ sess = tf.Session(graph=lm.graph)
 with lm.graph.as_default():
     saver =tf.train.Saver()
 with sess.as_default():
-    latest = tf.train.latest_checkpoint('logs_lm')
+    #latest = tf.train.latest_checkpoint('logs_lm')
+    latest = tf.train.latest_checkpoint(saved_dir)
     saver.restore(sess, latest)
 
 # 3. 准备测试所需数据， 不必和训练数据一致，通过设置data_args.data_type测试，
@@ -52,12 +57,14 @@ data_args.data_type = 'train'
 data_args.shuffle = False
 data_args.batch_size = 1
 test_data = get_data(data_args)
+#nsampels = len(test_data.wav_lst)
+nsampels = 100 #len(test_data.wav_lst)
 
 # 4. 进行测试-------------------------------------------
 am_batch = test_data.get_am_batch()
 word_num = 0
 word_error_num = 0
-for i in range(10):
+for i in range(nsampels):
     print('\n the ', i, 'th example.')
     # 载入训练好的模型，并进行识别
     inputs, _ = next(am_batch)
