@@ -4,7 +4,7 @@ import os
 import argparse
 import tensorflow as tf
 import keras
-from keras.optimizers import Adam
+from keras.optimizers import Adam, SGD
 from utils import get_data, data_hparams, assign_datasets, create_path
 from keras.callbacks import ModelCheckpoint
 from keras.utils import multi_gpu_model
@@ -68,7 +68,8 @@ am_args.is_training = True
 am = Am(am_args)
 ctc_model = am.ctc_model
 
-opt = Adam(lr = args.lr, beta_1 = 0.9, beta_2 = 0.999, decay = 0.01, epsilon = 10e-8)
+#opt = Adam(lr = args.lr, beta_1 = 0.9, beta_2 = 0.999, decay = 0.01, epsilon = 10e-8, clipnorm=400.0)
+opt = SGD(lr=args.lr, momentum=0.9, clipnorm=400.0)
 
 if args.nworkers > 1:
     ctc_model = multi_gpu_model(ctc_model, gpus=args.nworkers)
@@ -76,7 +77,6 @@ if args.nworkers > 1:
 ctc_model.compile(loss={'ctc': lambda y_true, output: output}, optimizer=opt)
 
 
-#if os.path.exists('logs_am/model.h5'):
 if args.pretrain is not None and os.path.exists(args.pretrain):
     logger.info('load acoustic model: %s ...' % args.pretrain)
     ctc_model.load_weights(args.pretrain)
@@ -106,7 +106,8 @@ callbacks = [
 batch = train_data.get_am_batch()
 dev_batch = dev_data.get_am_batch()
 
-ctc_model.fit_generator(batch, initial_epoch=args.initial_epoch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True, validation_data=dev_batch, validation_steps=batch_num_of_dev)
+#ctc_model.fit_generator(batch, initial_epoch=args.initial_epoch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True, validation_data=dev_batch, validation_steps=batch_num_of_dev)
+ctc_model.fit_generator(batch, initial_epoch=args.initial_epoch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True)
 
 am.ctc_model.save_weights('%s/%s_model.h5' % (args.saved_dir, EXPERIMENT))
 
@@ -132,13 +133,11 @@ with tf.Session(graph=lm.graph, config=tf.ConfigProto(log_device_placement=True)
     merged = tf.summary.merge_all()
     sess.run(tf.global_variables_initializer())
     add_num = 0
-    #if os.path.exists('logs_lm/checkpoint'):
     if os.path.exists('%s/checkpoint'%args.saved_dir):
         print('loading language model...')
-        latest = tf.train.latest_checkpoint('logs_lm')
+        latest = tf.train.latest_checkpoint(args.saved_dir)
         add_num = int(latest.split('_')[-1])
         saver.restore(sess, latest)
-    #writer = tf.summary.FileWriter('logs_lm/tensorboard', tf.get_default_graph())
     for k in range(epochs):
         total_loss = 0
         batch = train_data.get_lm_batch()
@@ -151,6 +150,5 @@ with tf.Session(graph=lm.graph, config=tf.ConfigProto(log_device_placement=True)
                 rs=sess.run(merged, feed_dict=feed)
                 #writer.add_summary(rs, k * batch_num + i)
         logger.info('epochs: %d%s%f', k+1, ': average loss = ', total_loss/batch_num)
-    #saver.save(sess, 'logs_lm/%s_model_%d' % (EXPERIMENT, epochs + add_num))
     saver.save(sess, '%s/%s_model_%d' % (args.saved_dir, EXPERIMENT, epochs + add_num))
     #writer.close()

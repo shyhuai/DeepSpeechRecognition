@@ -6,16 +6,17 @@ import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 from keras.models import model_from_json
 
-EXPERIMENT='thchs30-2'
+EXPERIMENT='thchs30'
 DATASETS='thchs30'
-saved_dir='./checkpoint2'
+saved_dir='/datasets/shshi/checkpoint3'
+data_dir='/datasets/shshi/speech/sp2chs'
 #EXPERIMENT='thchs30multigpu'
 
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 datasets = DATASETS.split(',')
 from utils import get_data, data_hparams
 data_args = data_hparams()
-data_args.data_path = '/home/comp/15485625/data/speech/sp2chs'
+data_args.data_path = data_dir 
 data_args.data_length = None
 assign_datasets(datasets, data_args)
 train_data = get_data(data_args)
@@ -53,7 +54,7 @@ with sess.as_default():
 # 3. 准备测试所需数据， 不必和训练数据一致，通过设置data_args.data_type测试，
 #    此处应设为'test'，我用了'train'因为演示模型较小，如果使用'test'看不出效果，
 #    且会出现未出现的词。
-data_args.data_type = 'train'
+data_args.data_type = 'test'
 data_args.shuffle = False
 data_args.batch_size = 1
 test_data = get_data(data_args)
