@@ -129,8 +129,8 @@ if training_lm:
     lm_args.hidden_units = 512
     lm_args.dropout_rate = 0.2
     #lm_args.lr = 0.0003
-    lm_args.lr = 0.0005
-    #lm_args.lr = 0.00003
+    #lm_args.lr = 0.0005
+    lm_args.lr = 0.00001
     #lm_args.lr = 0.1
     #lm_args.lr = 6.25e-5
     lm_args.is_training = True
