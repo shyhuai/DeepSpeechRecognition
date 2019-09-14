@@ -6,10 +6,17 @@ import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 from keras.models import model_from_json
 
-EXPERIMENT='thchs30'
-DATASETS='thchs30'
-saved_dir='/datasets/shshi/checkpoint3'
+EXPERIMENT='thchs30-aishell-finetune-0.65'
+DATASETS='thchs30,aishell'
+saved_dir='/datasets/shshi/checkpoint-aishell-finetune-0.65'
+#saved_dir='/datasets/shshi/checkpoint-aishell'
 data_dir='/datasets/shshi/speech/sp2chs'
+
+#EXPERIMENT='thchs30-aishell'
+#DATASETS='thchs30,aishell'
+#saved_dir='/datasets/shshi/checkpoint-aishell'
+#data_dir='/datasets/shshi/speech/sp2chs'
+
 #EXPERIMENT='thchs30multigpu'
 
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
@@ -58,8 +65,8 @@ data_args.data_type = 'test'
 data_args.shuffle = False
 data_args.batch_size = 1
 test_data = get_data(data_args)
-#nsampels = len(test_data.wav_lst)
-nsampels = 100 #len(test_data.wav_lst)
+nsampels = len(test_data.wav_lst)
+nsampels = len(test_data.wav_lst)
 
 # 4. 进行测试-------------------------------------------
 am_batch = test_data.get_am_batch()

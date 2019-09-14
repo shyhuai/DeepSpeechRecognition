@@ -1,0 +1,4 @@
+In the directory: /home/shaohuais/repos/dsr
+As the user: shaohuais
+slurmstepd: error: execve(): /home/shaohuais/repos/dsr/finetune.sh: Exec format error
+srun: error: ivb100: task 0: Exited with exit code 8
