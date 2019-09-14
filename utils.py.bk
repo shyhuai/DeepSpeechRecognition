@@ -14,12 +14,12 @@ def data_hparams():
         # vocab
         data_type='train',
         data_path='data/',
-        thchs30=True,
-        aishell=True,
+        thchs30=False,
+        aishell=False,
         prime=False,
         stcmd=False,
         batch_size=1,
-        data_length=None,
+        data_length=10,
         shuffle=True)
     return params
 
@@ -33,7 +33,6 @@ def assign_datasets(datasets, param):
             param.prime = True
         elif d == 'stcmd':
             param.stcmd = True
-
 
 class get_data():
     def __init__(self, args):
@@ -120,44 +119,6 @@ class get_data():
                           'the_labels': pad_label_data,
                           'input_length': input_length,
                           'label_length': label_length,
-                          }
-                outputs = {'ctc': np.zeros(pad_wav_data.shape[0], )}
-                yield inputs, outputs
-
-    def get_dep_batch(self, wav_list):
-        #shuffle_list = [i for i in range(len(self.wav_lst))]
-        while 1:
-            #if self.shuffle == True:
-            #    shuffle(shuffle_list)
-            wav_list.sort()
-            #                                                           print(wav_list)
-            for i in range(len(wav_list) // self.batch_size):
-                wav_data_lst = []
-                label_data_lst = []
-                begin = i * self.batch_size
-                end = begin + self.batch_size
-                sub_list = wav_list[begin:end]
-                ############################################print(wav_list, sub_list)
-                for index in sub_list:
-                    fbank = compute_fbank('./tmp/'+index)
-                    pad_fbank = np.zeros((fbank.shape[0] // 8 * 8 + 8, fbank.shape[1]))
-                    pad_fbank[:fbank.shape[0], :] = fbank
-                    #label = self.pny2id(self.pny_lst[index], self.am_vocab)
-                    #label_ctc_len = self.ctc_len(label)
-                    #if pad_fbank.shape[0] // 8 >= label_ctc_len:
-                    #    wav_data_lst.append(pad_fbank)
-                    #    label_data_lst.append(label)
-                #if len(wav_data)
-                #pad_wav_data, input_length = self.wav_padding(wav_data_lst)
-                pad_wav_data = pad_fbank
-                wav_lst = np.zeros((1, len(pad_wav_data), 200, 1))
-                wav_lst[0, :len(pad_wav_data), :, 0]=pad_wav_data
-                #wav_lst[i][:len(pad_wav_data)]=pad_wav_data
-                #pad_label_data, label_length = self.label_padding(label_data_lst)
-                inputs = {'the_inputs': wav_lst,
-                          'the_labels': ["Not given"],
-                          'input_length': 1,
-                          'label_length': 1,
                           }
                 outputs = {'ctc': np.zeros(pad_wav_data.shape[0], )}
                 yield inputs, outputs

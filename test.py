@@ -6,10 +6,13 @@ import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 from keras.models import model_from_json
 
-EXPERIMENT='thchs30'
-DATASETS='thchs30'
-saved_dir='/datasets/shshi/checkpoint3'
-data_dir='/datasets/shshi/speech/sp2chs'
+EXPERIMENT='thchs30-aishell-finetune-0.65'
+DATASETS='thchs30,aishell'
+#saved_dir='/datasets/shshi/checkpoint3'
+#data_dir='/datasets/shshi/speech/sp2chs'
+saved_dir='/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-0.65'
+#data_dir='/datasets/shshi/speech/sp2chs'
+data_dir='/home/comp/15485625/data/speech/sp2chs'
 #EXPERIMENT='thchs30multigpu'
 
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
