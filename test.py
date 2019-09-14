@@ -8,9 +8,15 @@ from keras.models import model_from_json
 
 EXPERIMENT='thchs30-aishell-finetune-0.65'
 DATASETS='thchs30,aishell'
-saved_dir='/datasets/shshi/checkpoint-aishell-finetune-0.65'
+
+#GPUHOME
+saved_dir='/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-0.65'
+data_dir='/home/comp/15485625/data/speech/sp2chs'
+
+#NVIDIA GPU
+#saved_dir='/datasets/shshi/checkpoint-aishell-finetune-0.65'
 #saved_dir='/datasets/shshi/checkpoint-aishell'
-data_dir='/datasets/shshi/speech/sp2chs'
+#data_dir='/datasets/shshi/speech/sp2chs'
 
 #EXPERIMENT='thchs30-aishell'
 #DATASETS='thchs30,aishell'
