@@ -14,8 +14,8 @@ def data_hparams():
         # vocab
         data_type='train',
         data_path='data/',
-        thchs30=True,
-        aishell=True,
+        thchs30=False,
+        aishell=False,
         prime=False,
         stcmd=False,
         batch_size=1,
@@ -172,15 +172,26 @@ class get_data():
             max_len = max([len(line) for line in input_batch])
             input_batch = np.array(
                 [self.pny2id(line, self.pny_vocab) + [0] * (max_len - len(line)) for line in input_batch])
+                #[self.pny2id(''.join(line.split()), self.pny_vocab) + [0] * (max_len - len(line)) for line in input_batch])
             label_batch = np.array(
-                [self.han2id(line, self.han_vocab) + [0] * (max_len - len(line)) for line in label_batch])
+                #[self.han2id(line, self.han_vocab) + [0] * (max_len - len(line)) for line in label_batch])
+                [self.han2id(''.join(line.split()), self.han_vocab) + [0] * (max_len - len(''.join(line.split()))) for line in label_batch])
             yield input_batch, label_batch
 
     def pny2id(self, line, vocab):
         return [vocab.index(pny) for pny in line]
 
     def han2id(self, line, vocab):
-        return [vocab.index(han) for han in line]
+        indices = []
+        for han in line:
+            try:
+                i = vocab.index(han)
+            except:
+                print('Error: ', line, han)
+                raise
+            indices.append(i)
+        return indices
+        #return [vocab.index(han) for han in line]
 
     def wav_padding(self, wav_data_lst):
         wav_lens = [len(data) for data in wav_data_lst]
