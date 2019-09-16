@@ -125,13 +125,15 @@ if training_lm:
     lm_args.num_blocks = 6
     lm_args.input_vocab_size = len(train_data.pny_vocab)
     lm_args.label_vocab_size = len(train_data.han_vocab)
+    logger.info('# of pinyin vaocal: %d', lm_args.input_vocab_size)
+    logger.info('# of hanzi vaocal: %d', lm_args.label_vocab_size)
     lm_args.max_length = 100
     lm_args.hidden_units = 512
     lm_args.dropout_rate = 0.2
-    #lm_args.lr = 0.0003
-    lm_args.lr = 0.0005
-    #lm_args.lr = 0.00003
-    #lm_args.lr = 0.1
+    lm_args.lr = 0.0003
+    #lm_args.lr = 0.0005
+    #lm_args.lr = 0.000001
+    #lm_args.lr = 0.001
     #lm_args.lr = 6.25e-5
     lm_args.is_training = True
     lm = Lm(lm_args)

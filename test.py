@@ -6,17 +6,18 @@ import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 from keras.models import model_from_json
 
-EXPERIMENT='thchs30-aishell-finetune-0.65'
+AM_EXPERIMENT='thchs30-aishell-finetune2'
+LM_EXPERIMENT='lmthchs30-aishell-finetune-0.65'
 DATASETS='thchs30,aishell'
 
 #GPUHOME
-saved_dir='/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-0.65'
-data_dir='/home/comp/15485625/data/speech/sp2chs'
+#saved_dir='/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-0.65'
+#data_dir='/home/comp/15485625/data/speech/sp2chs'
 
 #NVIDIA GPU
-#saved_dir='/datasets/shshi/checkpoint-aishell-finetune-0.65'
+saved_dir='/datasets/shshi/checkpoint-aishell-finetune-6.24'
 #saved_dir='/datasets/shshi/checkpoint-aishell'
-#data_dir='/datasets/shshi/speech/sp2chs'
+data_dir='/datasets/shshi/speech/sp2chs'
 
 #EXPERIMENT='thchs30-aishell'
 #DATASETS='thchs30,aishell'
@@ -44,7 +45,7 @@ am_args.is_training = True
 am_args.vocab_size = len(train_data.am_vocab)
 am = Am(am_args)
 print('loading acoustic model...')
-am.ctc_model.load_weights('%s/%s_model.h5'%(saved_dir, EXPERIMENT))
+am.ctc_model.load_weights('%s/%s_model.h5'%(saved_dir, AM_EXPERIMENT))
 #am.ctc_model.load_weights('checkpoint2/%s_model_56.hdf5'%EXPERIMENT)
 
 # 2.语言模型-------------------------------------------
