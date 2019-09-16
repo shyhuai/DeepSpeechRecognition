@@ -1,7 +1,0 @@
-In the directory: /home/shaohuais/repos/dsr
-As the user: shaohuais
-Traceback (most recent call last):
-  File "train.py", line 5, in <module>
-srun: error: dgx03: task 0: Exited with exit code 1
-    import tensorflow as tf
-ImportError: No module named tensorflow
