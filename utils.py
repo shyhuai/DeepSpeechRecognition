@@ -139,7 +139,8 @@ class get_data():
                 sub_list = wav_list[begin:end]
                 ############################################print(wav_list, sub_list)
                 for index in sub_list:
-                    fbank = compute_fbank('./tmp/'+index)
+                    #fbank = compute_fbank('./tmp/'+index)
+                    fbank = compute_fbank(index)
                     pad_fbank = np.zeros((fbank.shape[0] // 8 * 8 + 8, fbank.shape[1]))
                     pad_fbank[:fbank.shape[0], :] = fbank
                     #label = self.pny2id(self.pny_lst[index], self.am_vocab)

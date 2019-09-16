@@ -53,6 +53,9 @@ from model_language.transformer import Lm, lm_hparams
 lm_args = lm_hparams()
 lm_args.input_vocab_size = len(train_data.pny_vocab)
 lm_args.label_vocab_size = len(train_data.han_vocab)
+
+print('Pinyin vocab size: %d' % lm_args.input_vocab_size)
+print('Hanzi vocab size: %d' % lm_args.label_vocab_size)
 lm_args.dropout_rate = 0.
 print('loading language model...')
 lm = Lm(lm_args)

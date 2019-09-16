@@ -28,6 +28,7 @@ am_args.is_training = True
 am = Am(am_args)
 print('loading acoustic model...')
 am.ctc_model.load_weights('/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-0.65/thchs30-aishell-finetune-0.65_model.h5')
+#am.ctc_model.load_weights('/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5')
 #am.ctc_model.load_weights('logs_am/model.h5')
 
 # 2.语言模型-------------------------------------------
@@ -36,6 +37,8 @@ from model_language.transformer import Lm, lm_hparams
 lm_args = lm_hparams()
 lm_args.input_vocab_size = len(train_data.pny_vocab)
 lm_args.label_vocab_size = len(train_data.han_vocab)
+print('Pinyin vocab size: %d' % lm_args.input_vocab_size)
+print('Hanzi vocab size: %d' % lm_args.label_vocab_size)
 lm_args.dropout_rate = 0.
 print('loading language model...')
 lm = Lm(lm_args)
@@ -43,7 +46,7 @@ sess = tf.Session(graph=lm.graph)
 with lm.graph.as_default():
     saver =tf.train.Saver()
 with sess.as_default():
-    latest = tf.train.latest_checkpoint('/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-0.65')
+    latest = tf.train.latest_checkpoint('/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-6.24')
     saver.restore(sess, latest)
 
 # 3. 准备测试所需数据， 不必和训练数据一致，通过设置data_args.data_type测试，
@@ -67,7 +70,7 @@ framerate = testfile.getframerate()
 framenum = testfile.getnframes()
 length = framenum/framerate
 print("The length of {} is {} seconds.".format(thefile, length))
-max_len = 10
+max_len = 100
 if length > max_len:
     piece_len = (max_len // 3) * 2
     portion = piece_len * framerate
@@ -75,16 +78,20 @@ if length > max_len:
     n_pieces = length // piece_len + 1
     n_pieces = int(n_pieces)
     print("The file exceeds the max length of {} seconds and needs to be split into {} pieces".format(max_len, n_pieces))
-    #for i in range(n_pieces):
-    #    apiece = testfile.readframes(framerate*max_len)
-    #    testfile.setpos(testfile.tell()-portion)
-    #    tmp = wave.open('./tmp/tmp{:04}.wav'.format(i), mode='wb')
-    #    tmp.setnchannels(1)
-    #    tmp.setframerate(16000)
-    #    tmp.setsampwidth(2)
-    #    tmp.writeframes(apiece)
-    #    tmp.close()
-    am_batch = test_data.get_dep_batch(os.listdir('./tmp/'))
+    filelist = []
+    for i in range(n_pieces):
+        apiece = testfile.readframes(framerate*max_len)
+        testfile.setpos(testfile.tell()-portion)
+        filename = './tmp/tmp{:04}.wav'.format(i)
+        tmp = wave.open(filename, mode='wb')
+        tmp.setnchannels(1)
+        tmp.setframerate(16000)
+        tmp.setsampwidth(2)
+        tmp.writeframes(apiece)
+        tmp.close()
+        filelist.append(filename)
+    #am_batch = test_data.get_dep_batch(os.listdir('./tmp/'))
+    am_batch = test_data.get_dep_batch(filelist)
     #am_batch = test_data.get_dep_batch(os.listdir('/home/comp/15485625/data/speech/sp2chs/data_aishell/wav/test/'))
     for i in range(n_pieces):
         inputs, _ = next(am_batch)
