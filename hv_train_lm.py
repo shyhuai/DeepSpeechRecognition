@@ -11,6 +11,7 @@ import logging
 from settings import logger, formatter
 from callbacks import LossAndErrorPrintingCallback, lr_scheduler
 import horovod.tensorflow as hvd
+import time
 
 if True:
     parser = argparse.ArgumentParser(description="Distributed acoustic model trainer")
@@ -107,12 +108,24 @@ if True:
             for k in range(epochs):
                 total_loss = 0
                 batch = train_data.get_lm_batch()
+                stime = time.time()
+                avg_time = 0.0
+                display = 400
+                tmp_loss = 0.0
                 for i in range(batch_num):
                     input_batch, label_batch = next(batch)
                     #input_batch, label_batch = input_batch[rank*local_bs:(rank+1)*local_bs],label_batch[rank*local_bs:(rank+1)*local_bs] 
                     feed = {lm.x: input_batch, lm.y: label_batch}
                     cost,_ = sess.run([lm.mean_loss,lm.train_op], feed_dict=feed)
                     total_loss += cost
+                    tmp_loss += cost
+
+                    avg_time += time.time() - stime
+                    if i > 0 and i % display == 0:
+                        logger.info('[rank:%d] epoch: %d [%d/%d] loss: %f, time used per iteration: %f', rank, k, i, batch_num, tmp_loss/display, avg_time/display)
+                        tmp_loss = 0.0
+                        stime = time.time()
+                        avg_time = 0.0
                 logger.info('[rank:%d] epochs: %d%s%f', rank, k+1, ': average loss = ', total_loss/batch_num)
 
                 # Evaluation
