@@ -7,17 +7,22 @@ from utils import decode_ctc, GetEditDistance, assign_datasets
 from keras.models import model_from_json
 
 AM_EXPERIMENT='thchs30-aishell-finetune2'
-LM_EXPERIMENT='lmthchs30-aishell-finetune-0.65'
+#AM_EXPERIMENT='hvtrain'
 DATASETS='thchs30,aishell'
+#DATASETS='thchs30'
 
 #GPUHOME
-#saved_dir='/home/comp/15485625/checkpoits/checkpoint-aishell-finetune-0.65'
-#data_dir='/home/comp/15485625/data/speech/sp2chs'
+#am_saved_dir='/home/comp/15485625/checkpoints/hvtrain'
+#lm_saved_dir='/home/comp/15485625/checkpoints/lm-thchs30'
+am_saved_dir='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
+lm_saved_dir='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
+data_dir='/home/comp/15485625/data/speech/sp2chs'
 
 #NVIDIA GPU
-saved_dir='/datasets/shshi/checkpoint-aishell-finetune-6.24'
+#am_saved_dir='/datasets/shshi/checkpoint-aishell-finetune-6.24'
+#lm_saved_dir='/datasets/shshi/checkpoint-aishell-finetune-6.24'
 #saved_dir='/datasets/shshi/checkpoint-aishell'
-data_dir='/datasets/shshi/speech/sp2chs'
+#data_dir='/datasets/shshi/speech/sp2chs'
 
 #EXPERIMENT='thchs30-aishell'
 #DATASETS='thchs30,aishell'
@@ -45,7 +50,7 @@ am_args.is_training = True
 am_args.vocab_size = len(train_data.am_vocab)
 am = Am(am_args)
 print('loading acoustic model...')
-am.ctc_model.load_weights('%s/%s_model.h5'%(saved_dir, AM_EXPERIMENT))
+am.ctc_model.load_weights('%s/%s_model.h5'%(am_saved_dir, AM_EXPERIMENT))
 #am.ctc_model.load_weights('checkpoint2/%s_model_56.hdf5'%EXPERIMENT)
 
 # 2.语言模型-------------------------------------------
@@ -65,7 +70,7 @@ with lm.graph.as_default():
     saver =tf.train.Saver()
 with sess.as_default():
     #latest = tf.train.latest_checkpoint('logs_lm')
-    latest = tf.train.latest_checkpoint(saved_dir)
+    latest = tf.train.latest_checkpoint(lm_saved_dir)
     saver.restore(sess, latest)
 
 # 3. 准备测试所需数据， 不必和训练数据一致，通过设置data_args.data_type测试，

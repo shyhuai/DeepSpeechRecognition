@@ -1,10 +1,10 @@
 import os
 import argparse, os
 import tensorflow as tf
-from keras.optimizers import Adam
+from keras.optimizers import Adam, SGD
 from keras import backend as K
 import keras
-from utils import get_data, data_hparams, assign_datasets
+from utils import get_data, data_hparams, assign_datasets, create_path
 from keras.callbacks import ModelCheckpoint
 from keras.utils import multi_gpu_model
 import logging
@@ -16,6 +16,7 @@ if True:
     parser = argparse.ArgumentParser(description="Distributed acoustic model trainer")
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--log', type=str, default='train.log')
+    parser.add_argument('--initial_epoch', type=int, default=0, help='Set start epoch')
     parser.add_argument('--nworkers', type=int, default=4, help='# of GPUs')
     parser.add_argument('--datasets', type=str, default='aishell', help='Specify the dataset for training: thchs30,aishell,prime,stcmd')
     parser.add_argument('--logprefix', type=str, default='exp1', help='Specify the log prefix')
@@ -26,7 +27,10 @@ if True:
     parser.add_argument('--epochs', type=int, default=10, help='Default maximum epochs to train')
     args = parser.parse_args()
 
+create_path(args.saved_dir)
+
 hvd.init()
+os.environ["CUDA_VISIBLE_DEVICES"]=str(hvd.rank())
 logfile = args.log.split('.log')[0]+str(hvd.rank())+'.log'
 hdlr = logging.FileHandler(logfile)
 hdlr.setFormatter(formatter)
@@ -35,7 +39,7 @@ logger.info('Configurations: %s', args)
 
 config = tf.ConfigProto()
 config.gpu_options.allow_growth = True
-config.gpu_options.visible_device_list = str(hvd.local_rank())
+#config.gpu_options.visible_device_list = str(hvd.local_rank())
 K.set_session(tf.Session(config=config))
 
 
@@ -69,13 +73,14 @@ dev_data = get_data(data_args)
 from model_speech.cnn_ctc import Am, am_hparams
 am_args = am_hparams()
 am_args.vocab_size = len(train_data.am_vocab)
-am_args.gpu_nums = NWORKERS
+am_args.gpu_nums = 1
 am_args.lr = args.lr
 am_args.is_training = True
 am = Am(am_args)
 ctc_model = am.ctc_model
 
-opt = Adam(lr = args.lr, beta_1 = 0.9, beta_2 = 0.999, decay = 0.01, epsilon = 10e-8)
+#opt = Adam(lr = args.lr, beta_1 = 0.9, beta_2 = 0.999, decay = 0.01, epsilon = 10e-8)
+opt = SGD(lr=args.lr, momentum=0.9, clipnorm=400.0)
 opt = hvd.DistributedOptimizer(opt)
 
 ctc_model.compile(loss={'ctc': lambda y_true, output: output}, optimizer=opt)
@@ -98,7 +103,7 @@ logger.info('# of iterations per epoch: %d', batch_num)
 callbacks = [
         hvd.callbacks.BroadcastGlobalVariablesCallback(0),
         hvd.callbacks.MetricAverageCallback(),
-        LossAndErrorPrintingCallback(batch_num), 
+        LossAndErrorPrintingCallback(batch_num, ctc_model), 
         keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1),
         ]
 
@@ -110,56 +115,8 @@ if hvd.rank() == 0:
 batch = train_data.get_am_batch()
 dev_batch = dev_data.get_am_batch()
 
-ctc_model.fit_generator(batch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True, validation_data=dev_batch, validation_steps=batch_num_of_dev)
+#ctc_model.fit_generator(batch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True, validation_data=dev_batch, validation_steps=batch_num_of_dev)
+ctc_model.fit_generator(batch, steps_per_epoch=batch_num, epochs=epochs, verbose=0, callbacks=callbacks, workers=NDATATHREADS, use_multiprocessing=True)
 
 if hvd.rank() == 0:
-    am.ctc_model.save_weights('logs_am/%s_model.h5' % EXPERIMENT)
-    score = hvd.allreduce(ctc_model.evaluate_generator(dev_data, batch_num_of_dev, workers=1))
-    logger.info('Test loss: %s', score)
-
-
-# 2.语言模型训练-------------------------------------------
-def train_lm():
-    from model_language.transformer import Lm, lm_hparams
-    lm_args = lm_hparams()
-    lm_args.num_heads = 8
-    lm_args.num_blocks = 6
-    lm_args.input_vocab_size = len(train_data.pny_vocab)
-    lm_args.label_vocab_size = len(train_data.han_vocab)
-    lm_args.max_length = 100
-    lm_args.hidden_units = 512
-    lm_args.dropout_rate = 0.2
-    lm_args.lr = 0.0003
-    lm_args.is_training = True
-    lm = Lm(lm_args)
-    epochs=10
-    
-    with lm.graph.as_default():
-        saver =tf.train.Saver()
-    with tf.Session(graph=lm.graph, config=tf.ConfigProto(log_device_placement=True)) as sess:
-        merged = tf.summary.merge_all()
-        sess.run(tf.global_variables_initializer())
-        add_num = 0
-        if os.path.exists('logs_lm/checkpoint'):
-            print('loading language model...')
-            latest = tf.train.latest_checkpoint('logs_lm')
-            add_num = int(latest.split('_')[-1])
-            saver.restore(sess, latest)
-        #writer = tf.summary.FileWriter('logs_lm/tensorboard', tf.get_default_graph())
-        for k in range(epochs):
-            total_loss = 0
-            batch = train_data.get_lm_batch()
-            for i in range(batch_num):
-                input_batch, label_batch = next(batch)
-                feed = {lm.x: input_batch, lm.y: label_batch}
-                cost,_ = sess.run([lm.mean_loss,lm.train_op], feed_dict=feed)
-                total_loss += cost
-                if (k * batch_num + i) % 10 == 0:
-                    rs=sess.run(merged, feed_dict=feed)
-                    #writer.add_summary(rs, k * batch_num + i)
-            logger.info('epochs: %d%s%f', k+1, ': average loss = ', total_loss/batch_num)
-        saver.save(sess, 'logs_lm/%s_model_%d' % (EXPERIMENT, epochs + add_num))
-        #writer.close()
-
-if hvd.rank() == 0:
-    train_lm()
+    am.ctc_model.save_weights('%s/%s_model.h5' % (args.saved_dir, EXPERIMENT))

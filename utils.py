@@ -165,11 +165,16 @@ class get_data():
 
     def get_lm_batch(self):
         batch_num = len(self.pny_lst) // self.batch_size
+        shuffle_list = [i for i in range(len(self.pny_lst))]
+        if self.shuffle == True:
+            shuffle(shuffle_list)
+        pny_lst = [self.pny_lst[i] for i in shuffle_list]
+        han_lst = [self.han_lst[i] for i in shuffle_list] 
         for k in range(batch_num):
             begin = k * self.batch_size
             end = begin + self.batch_size
-            input_batch = self.pny_lst[begin:end]
-            label_batch = self.han_lst[begin:end]
+            input_batch = pny_lst[begin:end]
+            label_batch = han_lst[begin:end]
             max_len = max([len(line) for line in input_batch])
             input_batch = np.array(
                 [self.pny2id(line, self.pny_vocab) + [0] * (max_len - len(line)) for line in input_batch])

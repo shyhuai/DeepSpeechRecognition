@@ -281,6 +281,8 @@ class Lm():
             self.num_blocks = arg.num_blocks
             self.max_length = arg.max_length
             self.lr = arg.lr
+            self.nworkers = arg.nworkers
+            self.hvd = arg.hvd
             self.dropout_rate = arg.dropout_rate
                 
             # input
@@ -327,10 +329,15 @@ class Lm():
                 # Training Scheme
                 self.global_step = tf.Variable(0, name='global_step', trainable=False)
                 #self.optimizer = tf.train.AdamOptimizer(learning_rate=self.lr, beta1=0.9, beta2=0.98, epsilon=1e-8)
-                self.optimizer = tf.train.AdamOptimizer(learning_rate=self.lr, beta1=0.9, beta2=0.98, epsilon=1e-9)
                 #self.optimizer = tf.train.MomentumOptimizer(learning_rate=self.lr, momentum=0.9, use_nesterov=True)
-                self.train_op = self.optimizer.minimize(self.mean_loss, global_step=self.global_step)
-                        
+                optimizer = tf.train.AdamOptimizer(learning_rate=self.lr, beta1=0.9, beta2=0.98, epsilon=1e-9)
+                if self.nworkers == 1:
+                    self.optimizer = optimizer
+                    self.train_op = self.optimizer.minimize(self.mean_loss, global_step=self.global_step)
+                else:
+                    self.optimizer = self.hvd.DistributedOptimizer(optimizer)
+                    global_step = tf.train.get_or_create_global_step()
+                    self.train_op = self.optimizer.minimize(self.mean_loss, global_step=global_step)
                 # Summary 
                 tf.summary.scalar('mean_loss', self.mean_loss)
                 self.merged = tf.summary.merge_all()
@@ -348,5 +355,7 @@ def lm_hparams():
         hidden_units = 512,
         dropout_rate = 0.2,
         lr = 0.0003,
+        nworkers=1,
+        hvd=None,
         is_training = True)
     return params
