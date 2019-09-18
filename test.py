@@ -6,16 +6,20 @@ import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 from keras.models import model_from_json
 
-AM_EXPERIMENT='thchs30-aishell-finetune2'
+#AM_EXPERIMENT='thchs30-aishell-finetune2'
+AM_EXPERIMENT='alldata'
 #AM_EXPERIMENT='hvtrain'
-DATASETS='thchs30,aishell'
+#DATASETS='thchs30,aishell'
+DATASETS='thchs30,aishell,prime,stcmd'
 #DATASETS='thchs30'
 
 #GPUHOME
 #am_saved_dir='/home/comp/15485625/checkpoints/hvtrain'
 #lm_saved_dir='/home/comp/15485625/checkpoints/lm-thchs30'
-am_saved_dir='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
-lm_saved_dir='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
+#am_saved_dir='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
+#lm_saved_dir='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
+am_saved_dir='/home/comp/15485625/checkpoints/checkpoint-alldata'
+lm_saved_dir='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 
 #NVIDIA GPU
@@ -80,7 +84,6 @@ data_args.data_type = 'test'
 data_args.shuffle = False
 data_args.batch_size = 1
 test_data = get_data(data_args)
-nsampels = len(test_data.wav_lst)
 nsampels = len(test_data.wav_lst)
 
 # 4. 进行测试-------------------------------------------

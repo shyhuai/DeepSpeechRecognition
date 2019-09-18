@@ -119,8 +119,8 @@ if True:
                     cost,_ = sess.run([lm.mean_loss,lm.train_op], feed_dict=feed)
                     total_loss += cost
                     tmp_loss += cost
-
                     avg_time += time.time() - stime
+
                     if i > 0 and i % display == 0:
                         logger.info('[rank:%d] epoch: %d [%d/%d] loss: %f, time used per iteration: %f', rank, k, i, batch_num, tmp_loss/display, avg_time/display)
                         tmp_loss = 0.0
