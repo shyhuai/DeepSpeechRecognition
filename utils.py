@@ -93,18 +93,20 @@ class get_data():
         else:
             self.am_vocab = self.mk_am_vocab(self.pny_lst)
             np.save('./data/am_vocab.npy', np.array(self.am_vocab))
+
         print('make lm pinyin vocab...')
         if os.path.exists('./data/pny_vocab.npy'):
             self.pny_vocab = list(np.load('./data/pny_vocab.npy'))
         else:
             self.pny_vocab = self.mk_lm_pny_vocab(self.pny_lst)
             np.save('./data/pny_vocab.npy', np.array(self.pny_vocab))
+
         print('make lm hanzi vocab...')
         if os.path.exists('./data/han_vocab.npy'):
             self.han_vocab = list(np.load('./data/han_vocab.npy'))
         else:
             self.han_vocab = self.mk_lm_han_vocab(self.han_lst)
-            np.save('./data/han_vocab.npy', np.array(self.pny_vocab))
+            np.save('./data/han_vocab.npy', np.array(self.han_vocab))
 
     def get_am_batch(self):
         shuffle_list = [i for i in range(len(self.wav_lst))]
