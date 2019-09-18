@@ -17,7 +17,16 @@ lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
 #fn = "/home/comp/15485625/speechrealtest/output4.wav"
-fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
+fn = [
+      "/home/comp/15485625/speechrealtest/D8_993.wav",
+      "/home/comp/15485625/speechrealtest/D8_994.wav",
+      "/home/comp/15485625/speechrealtest/D8_995.wav",
+      "/home/comp/15485625/speechrealtest/D8_996.wav", 
+      "/home/comp/15485625/speechrealtest/D8_997.wav",
+      "/home/comp/15485625/speechrealtest/D8_998.wav",
+     ]
+
+#fn = "/home/comp/15485625/speechrealtest/D8_995.wav"
 thefile = fn
 
 
@@ -78,9 +87,13 @@ test_data = get_data(data_args)
 #thefile = "/home/comp/15485625/chuyi_sunjiaman_mono.wav"
 #thefile = "/home/comp/15485625/speechrealtest/leletest2.wav"
 #thefile = "/home/comp/15485625/data/speech/sp2chs/data_aishell/wav/test/S0765/BAC009S0765W0121.wav"
-if not thefile.endswith('wav'):
+pretestfile = thefile
+if type(thefile) is list:
+    pretestfile = thefile[0]
+if not pretestfile.endswith('wav'):
     print("[Error*] The file is not in .wav format!")
-testfile = wave.open(thefile, mode='rb')
+
+testfile = wave.open(pretestfile, mode='rb')
 print("The input has {} channel(s)".format(testfile.getnchannels()))
 am_batch = ''
 framerate = testfile.getframerate()
@@ -88,7 +101,7 @@ framenum = testfile.getnframes()
 length = framenum/framerate
 print("The length of {} is {} seconds.".format(thefile, length))
 max_len = 10
-if length > max_len:
+if type(thefile) is not list and length > max_len:
     piece_len = max_len #(max_len // 3) * 2
     portion = piece_len * framerate
     n_pieces = length // piece_len + 1
@@ -134,29 +147,33 @@ if length > max_len:
             #word_num += len(label)
 
 else:
-    filelist = [thefile]
+    if type(thefile) is list:
+        filelist = thefile
+    else:
+        filelist = [thefile]
     am_batch = test_data.get_dep_batch(filelist)
-    inputs, _ = next(am_batch)
-    x = inputs['the_inputs']
-    #print(x.shape)
-    #y = test_data.pny_lst[i]
-    result = am.model.predict(x, steps=1)
-    # 将数字结果转化为文本结果
-    _, text = decode_ctc(result, train_data.am_vocab)
-    text = ' '.join(text)
-    print('%s: %s' % (filelist[0], text))
-    #print('原文结果：', ' '.join(y))
-    with sess.as_default():
-        text = text.strip('\n').split(' ')
-        x = np.array([train_data.pny_vocab.index(pny) for pny in text])
-        x = x.reshape(1, -1)
-        preds = sess.run(lm.preds, {lm.x: x})
-        #label = test_data.han_lst[i]
-        got = ''.join(train_data.han_vocab[idx] for idx in preds[0])
-        #print('原文汉字：', label)
-        #print('识别结果：', got)
-        print('%s: %s' % (filelist[0], got))
-        #word_error_num += min(len(label), GetEditDistance(label, got))
-        #word_num += len(label)
+    for i in range(len(filelist)):
+        inputs, _ = next(am_batch)
+        x = inputs['the_inputs']
+        #print(x.shape)
+        #y = test_data.pny_lst[i]
+        result = am.model.predict(x, steps=1)
+        # 将数字结果转化为文本结果
+        _, text = decode_ctc(result, train_data.am_vocab)
+        text = ' '.join(text)
+        print('%s: %s' % (filelist[i], text))
+        #print('原文结果：', ' '.join(y))
+        with sess.as_default():
+            text = text.strip('\n').split(' ')
+            x = np.array([train_data.pny_vocab.index(pny) for pny in text])
+            x = x.reshape(1, -1)
+            preds = sess.run(lm.preds, {lm.x: x})
+            #label = test_data.han_lst[i]
+            got = ''.join(train_data.han_vocab[idx] for idx in preds[0])
+            #print('原文汉字：', label)
+            #print('识别结果：', got)
+            print('%s: %s' % (filelist[i], got))
+            #word_error_num += min(len(label), GetEditDistance(label, got))
+            #word_num += len(label)
 
 sess.close()

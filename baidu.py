@@ -13,8 +13,16 @@ asp = AipSpeech(ai,ak,sk)
 #DATAPATH='/media/sf_Shared_Data/tmp/drchu/dsr/'
 #filename='output.wav'
 #fn = os.path.join(DATAPATH, filename)
-fn = "/home/comp/15485625/speechrealtest/output4.wav"
+#fn = "/home/comp/15485625/speechrealtest/output4.wav"
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
+fn = [
+      "/home/comp/15485625/speechrealtest/D8_993.wav",
+      "/home/comp/15485625/speechrealtest/D8_994.wav",
+      "/home/comp/15485625/speechrealtest/D8_995.wav",
+      "/home/comp/15485625/speechrealtest/D8_996.wav", 
+      "/home/comp/15485625/speechrealtest/D8_997.wav",
+      "/home/comp/15485625/speechrealtest/D8_998.wav",
+     ]
 
 def get_file_content(filePath):
     with open(filePath, 'rb') as fp:
@@ -22,6 +30,8 @@ def get_file_content(filePath):
 
 max_len = 10
 def split_audio_file(filename):
+    if type(filename) is list:
+        return filename
     testfile = wave.open(fn, mode='rb')
     framerate = testfile.getframerate()
     framenum = testfile.getnframes()
