@@ -23,7 +23,6 @@ fn = [
         #"./tmp/tmp0004.wav",
         ]
 
-#fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
 #fn = [
 #      "/home/comp/15485625/speechrealtest/D8_993.wav",
 #      "/home/comp/15485625/speechrealtest/D8_994.wav",
@@ -31,6 +30,11 @@ fn = [
 #      "/home/comp/15485625/speechrealtest/D8_996.wav", 
 #      "/home/comp/15485625/speechrealtest/D8_997.wav",
 #      "/home/comp/15485625/speechrealtest/D8_998.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0140.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0141.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0142.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0143.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0144.wav",
 #     ]
 
 def get_file_content(filePath):

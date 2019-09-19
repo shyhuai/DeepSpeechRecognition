@@ -45,6 +45,10 @@ data_dir='/home/comp/15485625/data/speech/sp2chs'
 DATASETS='thchs30,aishell,prime,stcmd'
 am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
 lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
+#am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
+#lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
+#am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
+#lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 
 #DATASETS='thchs30,aishell'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
@@ -166,7 +170,7 @@ def predict(thefile):
                 #print('识别结果：', got)
                 modified_RecvMessage = data.decode('utf-8')
                 print(modified_RecvMessage)
-                conn.send(got.encode('utf-8'))
+                conn.send((got+':').encode('utf-8'))
                 print('%s: %s' % (filelist[i], got))
                 #word_error_num += min(len(label), GetEditDistance(label, got))
                 #word_num += len(label)
@@ -195,7 +199,7 @@ def predict(thefile):
             #print('识别结果：', got)
             modified_RecvMessage = data.decode('utf-8')
             print(modified_RecvMessage)
-            conn.send(got.encode('utf-8'))
+            conn.send((got+':').encode('utf-8'))
             print('%s: %s' % (filelist[0], got))
             #word_error_num += min(len(label), GetEditDistance(label, got))
             #word_num += len(label)
@@ -242,6 +246,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="c:1--default, 2--recording")
     parser.add_argument('--choose', type=int, default=1)
+    parser.add_argument('--fn', type=str, default=None)
     args = parser.parse_args()
 
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -251,14 +256,11 @@ if __name__ == '__main__':
     conn, addr = serv.accept()
     data = conn.recv(4096)
     if args.choose == 1:
+        if args.fn is not None:
+            thefile = args.fn
         predict(thefile)
     elif args.choose ==2:
         my_record()
 
     conn.close()
     sess.close()
-
-
-
-
-
