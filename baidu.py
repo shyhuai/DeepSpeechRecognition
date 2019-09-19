@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+import argparse
 
 ak = 'H8BcNhFKMhmlwynyUB4YegOI'
 ai = '10469665'
@@ -10,22 +11,36 @@ sk = '3272504460441b5bd0d8c43294418b7a'
 
 import wave
 from aip import AipSpeech
+from utils import readfiles
 asp = AipSpeech(ai,ak,sk)
 
+parser = argparse.ArgumentParser(description="Automatic Speech Recognition with Baidu")
+parser.add_argument('--fn', type=str, default=None)
+args = parser.parse_args()
 
-fn = [
-      "/Users/lele/work/testdata/BAC009S0766W0140.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0141.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0142.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0143.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0144.wav",
-      "/Users/lele/work/testdata/D8_993.wav",
-      "/Users/lele/work/testdata/D8_994.wav",
-      "/Users/lele/work/testdata/D8_995.wav",
-      "/Users/lele/work/testdata/D8_996.wav", 
-      "/Users/lele/work/testdata/D8_997.wav",
-      "/Users/lele/work/testdata/D8_998.wav",
-     ]
+if args.fn is not None:
+    fn = args.fn
+    if fn.endswith('.txt'):
+        fn = readfiles(fn)
+    else:
+        fn = fn.split(',')
+else:
+    fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
+
+
+#fn = [
+#      "/Users/lele/work/testdata/BAC009S0766W0140.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0141.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0142.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0143.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0144.wav",
+#      "/Users/lele/work/testdata/D8_993.wav",
+#      "/Users/lele/work/testdata/D8_994.wav",
+#      "/Users/lele/work/testdata/D8_995.wav",
+#      "/Users/lele/work/testdata/D8_996.wav", 
+#      "/Users/lele/work/testdata/D8_997.wav",
+#      "/Users/lele/work/testdata/D8_998.wav",
+#     ]
 
 #fn = [
 #      "/home/comp/15485625/speechrealtest/D8_993.wav",
@@ -82,8 +97,8 @@ for fn in filelist:
     r = asp.asr(get_file_content(fn), 'pcm', 16000, {
         'dev_pid': 1536,
     })
-    #print(r)
     if r['err_no'] > 0:
+        print('error: ', r)
         continue
     print('%s: %s' % (fn, r['result'][0]))
 

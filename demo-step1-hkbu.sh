@@ -1,1 +1,1 @@
-TF_CPP_MIN_LOG_LEVEL=3 PYTHONWARNINGS="ignore" python -W ignore ol_deploy.py
+TF_CPP_MIN_LOG_LEVEL=3 PYTHONWARNINGS="ignore" python -W ignore ol_deploy.py --fn demo-testfiles.txt

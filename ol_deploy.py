@@ -5,8 +5,22 @@ import difflib
 import tensorflow as tf
 tf.logging.set_verbosity(tf.logging.ERROR)
 import numpy as np
-from utils import decode_ctc, GetEditDistance, assign_datasets
+import argparse
+import utils
+from utils import decode_ctc, GetEditDistance, assign_datasets, readfiles
 import wave
+
+parser = argparse.ArgumentParser(description="Automatic Speech Recognition")
+parser.add_argument('--fn', type=str, default=None)
+args = parser.parse_args()
+if args.fn is not None:
+    fn = args.fn
+    if fn.endswith('.txt'):
+        fn = readfiles(fn)
+    else:
+        fn = fn.split(',')
+else:
+    fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
 
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
@@ -20,9 +34,6 @@ lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
-#fn = "/home/comp/15485625/speechrealtest/output4.wav"
-#fn = "/Users/lele/work/testdata/D8_993.wav"
-#fn = "/Users/lele/work/testdata/output.wav"
 
 fn = [
       "/Users/lele/work/testdata/D8_993.wav",
@@ -37,6 +48,19 @@ fn = [
       "/Users/lele/work/testdata/BAC009S0766W0143.wav",
       "/Users/lele/work/testdata/BAC009S0766W0144.wav",
      ]
+#fn = [
+#      "/home/comp/15485625/speechrealtest/D8_993.wav",
+#      "/home/comp/15485625/speechrealtest/D8_994.wav",
+#      "/home/comp/15485625/speechrealtest/D8_995.wav",
+#      "/home/comp/15485625/speechrealtest/D8_996.wav", 
+#      "/home/comp/15485625/speechrealtest/D8_997.wav",
+#      "/home/comp/15485625/speechrealtest/D8_998.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0140.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0141.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0142.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0143.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0144.wav",
+#     ]
 
 #fn = "/home/comp/15485625/speechrealtest/D8_995.wav"
 thefile = fn

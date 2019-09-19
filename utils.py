@@ -333,3 +333,10 @@ def create_path(relative_path):
         except:
             pass
 
+def readfiles(txtfn):
+    files = []
+    with open(txtfn) as f:
+        for l in f.readlines():
+            files.append(l[0:-1])
+    return files
+

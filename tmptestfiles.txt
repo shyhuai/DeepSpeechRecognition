@@ -1,0 +1,10 @@
+./tmp/tmp0000.wav
+./tmp/tmp0001.wav
+./tmp/tmp0002.wav
+./tmp/tmp0003.wav
+./tmp/tmp0004.wav
+./tmp/tmp0005.wav
+./tmp/tmp0006.wav
+./tmp/tmp0007.wav
+./tmp/tmp0008.wav
+./tmp/tmp0009.wav

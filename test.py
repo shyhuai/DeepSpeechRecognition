@@ -80,11 +80,16 @@ with sess.as_default():
 # 3. 准备测试所需数据， 不必和训练数据一致，通过设置data_args.data_type测试，
 #    此处应设为'test'，我用了'train'因为演示模型较小，如果使用'test'看不出效果，
 #    且会出现未出现的词。
+data_args = data_hparams()
+assign_datasets(datasets, data_args)
+data_args.data_path = data_dir 
+data_args.data_length = None
 data_args.data_type = 'test'
 data_args.shuffle = False
 data_args.batch_size = 1
 test_data = get_data(data_args)
-nsampels = len(test_data.wav_lst)
+nsampels = len(test_data.pny_lst)
+print('nsamples: ', nsampels)
 
 # 4. 进行测试-------------------------------------------
 am_batch = test_data.get_am_batch()

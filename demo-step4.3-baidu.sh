@@ -1,1 +1,1 @@
-python baidu.py
+python baidu.py --fn tmptestfiles.txt
