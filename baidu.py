@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os
+import argparse
 
 ak = 'H8BcNhFKMhmlwynyUB4YegOI'
 ai = '10469665'
@@ -8,26 +9,50 @@ sk = '3272504460441b5bd0d8c43294418b7a'
 
 import wave
 from aip import AipSpeech
+from utils import readfiles
 asp = AipSpeech(ai,ak,sk)
 
-#DATAPATH='/media/sf_Shared_Data/tmp/drchu/dsr/'
-#filename='output.wav'
-#fn = os.path.join(DATAPATH, filename)
-#fn = "/home/comp/15485625/speechrealtest/output4.wav"
-#fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
-fn = [
-      "/home/comp/15485625/speechrealtest/D8_993.wav",
-      "/home/comp/15485625/speechrealtest/D8_994.wav",
-      "/home/comp/15485625/speechrealtest/D8_995.wav",
-      "/home/comp/15485625/speechrealtest/D8_996.wav", 
-      "/home/comp/15485625/speechrealtest/D8_997.wav",
-      "/home/comp/15485625/speechrealtest/D8_998.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0140.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0141.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0142.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0143.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0144.wav",
-     ]
+parser = argparse.ArgumentParser(description="Automatic Speech Recognition with Baidu")
+parser.add_argument('--fn', type=str, default=None)
+args = parser.parse_args()
+
+if args.fn is not None:
+    fn = args.fn
+    if fn.endswith('.txt'):
+        fn = readfiles(fn)
+    else:
+        fn = fn.split(',')
+else:
+    fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
+
+
+#fn = [
+#      "/Users/lele/work/testdata/BAC009S0766W0140.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0141.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0142.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0143.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0144.wav",
+#      "/Users/lele/work/testdata/D8_993.wav",
+#      "/Users/lele/work/testdata/D8_994.wav",
+#      "/Users/lele/work/testdata/D8_995.wav",
+#      "/Users/lele/work/testdata/D8_996.wav", 
+#      "/Users/lele/work/testdata/D8_997.wav",
+#      "/Users/lele/work/testdata/D8_998.wav",
+#     ]
+
+#fn = [
+#      "/home/comp/15485625/speechrealtest/D8_993.wav",
+#      "/home/comp/15485625/speechrealtest/D8_994.wav",
+#      "/home/comp/15485625/speechrealtest/D8_995.wav",
+#      "/home/comp/15485625/speechrealtest/D8_996.wav", 
+#      "/home/comp/15485625/speechrealtest/D8_997.wav",
+#      "/home/comp/15485625/speechrealtest/D8_998.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0140.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0141.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0142.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0143.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0144.wav",
+#     ]
 
 def get_file_content(filePath):
     with open(filePath, 'rb') as fp:

@@ -3,12 +3,28 @@ import os
 import difflib
 import tensorflow as tf
 import numpy as np
-from utils import decode_ctc, GetEditDistance, assign_datasets
+import argparse
+import utils
+from utils import decode_ctc, GetEditDistance, assign_datasets, readfiles
 import wave
+
+parser = argparse.ArgumentParser(description="Automatic Speech Recognition")
+parser.add_argument('--fn', type=str, default=None)
+args = parser.parse_args()
+if args.fn is not None:
+    fn = args.fn
+    if fn.endswith('.txt'):
+        fn = readfiles(fn)
+    else:
+        fn = fn.split(',')
+else:
+    fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
 
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 DATASETS='thchs30,aishell,prime,stcmd'
+#am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
+#lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
 lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 
@@ -16,7 +32,6 @@ lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
-fn = "/home/comp/15485625/speechrealtest/output.wav"
 #fn = [
 #      "/home/comp/15485625/speechrealtest/D8_993.wav",
 #      "/home/comp/15485625/speechrealtest/D8_994.wav",
@@ -104,7 +119,7 @@ am_batch = ''
 framerate = testfile.getframerate()
 framenum = testfile.getnframes()
 length = framenum/framerate
-print("The length of {} is {} seconds.".format(thefile, length))
+#print("The length of {} is {} seconds.".format(thefile, length))
 max_len = 10
 if type(thefile) is not list and length > max_len:
     piece_len = max_len #(max_len // 3) * 2

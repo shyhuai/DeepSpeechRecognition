@@ -6,10 +6,12 @@ import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 import wave
 import socket
+import time
 import argparse
 from multiprocessing import Process
 from pyaudio import PyAudio,paInt16
-server_IP = '127.0.0.1'
+#server_IP = '127.0.0.1'
+server_IP = '158.182.198.94'
 server_PORT = 15678
 
 framerate=16000
@@ -42,17 +44,19 @@ TIME=10
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 DATASETS='thchs30,aishell,prime,stcmd'
+am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
+lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 #am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
 #lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
-am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
-lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
+#am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
+#lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 
 #DATASETS='thchs30,aishell'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
-#fn = "/home/comp/15485625/speechrealtest/output4.wav"
-fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
+fn = "/Users/lele/work/testdata/D8_993.wav"
+#fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
 thefile = fn
 
 
@@ -166,8 +170,8 @@ def predict(thefile):
                 #print('原文汉字：', label)
                 #print('识别结果：', got)
                 modified_RecvMessage = data.decode('utf-8')
-                print(modified_RecvMessage)
-                conn.send(got.encode('utf-8'))
+                #print(modified_RecvMessage)
+                conn.send((got+':').encode('utf-8'))
                 print('%s: %s' % (filelist[i], got))
                 #word_error_num += min(len(label), GetEditDistance(label, got))
                 #word_num += len(label)
@@ -195,8 +199,8 @@ def predict(thefile):
             #print('原文汉字：', label)
             #print('识别结果：', got)
             modified_RecvMessage = data.decode('utf-8')
-            print(modified_RecvMessage)
-            conn.send(got.encode('utf-8'))
+            #print(modified_RecvMessage)
+            conn.send((got+':').encode('utf-8'))
             print('%s: %s' % (filelist[0], got))
             #word_error_num += min(len(label), GetEditDistance(label, got))
             #word_num += len(label)
@@ -216,15 +220,23 @@ def my_record():
     cnt = 0
     while 1:
         pa=PyAudio()
+        count=0
+        print('Please speak in 3 seconds...')
+        i = 0
+        while i < 3:
+            time.sleep(1)
+            print(3-i)
+            i += 1
+        print('Speaking...')
         stream=pa.open(format = paInt16,channels=1,
                        rate=framerate,input=True,
                        frames_per_buffer=NUM_SAMPLES)
         my_buf=[]
-        count=0
         while count<TIME*8:#控制录音时间
             string_audio_data = stream.read(NUM_SAMPLES)
             my_buf.append(string_audio_data)
             count+=1
+        print('Processing, please wait ...')
         save_wave_file('tmp{:04}.wav'.format(cnt), my_buf)
         #p = Process(target=save_wave_file, args=('tmp{:04}.wav'.format(cnt),my_buf),)
         #p.start()
@@ -235,23 +247,26 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="c:1--default, 2--recording")
     parser.add_argument('--choose', type=int, default=1)
+    parser.add_argument('--fn', type=str, default=None)
     args = parser.parse_args()
 
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serv.bind((server_IP, server_PORT))
     serv.listen(5)
-    print("waiting connect=====================================\n")
+    print("ServerIP: %s, Port: %d, Waiting connect ...\n" % (server_IP, server_PORT))
     conn, addr = serv.accept()
     data = conn.recv(4096)
     if args.choose == 1:
-        predict(thefile)
+        if args.fn is not None:
+            thefile = args.fn.split(',')
+        if type(thefile) is list:
+            for f in thefile:
+                print('f: ', f)
+                predict(f)
+        else:
+            predict(thefile)
     elif args.choose ==2:
         my_record()
 
     conn.close()
     sess.close()
-
-
-
-
-
