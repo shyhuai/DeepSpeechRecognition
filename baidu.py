@@ -7,16 +7,26 @@ ak = 'H8BcNhFKMhmlwynyUB4YegOI'
 ai = '10469665'
 sk = '3272504460441b5bd0d8c43294418b7a'
 
-# Ref: https://ai.baidu.com/docs#/ASR-API/top
 
 import wave
 from aip import AipSpeech
-from utils import readfiles
+#from utils import readfiles
+
+def readfiles(txtfn):
+    files = []
+    with open(txtfn) as f:
+        for l in f.readlines():
+            files.append(l[0:-1])
+    return files
+
 asp = AipSpeech(ai,ak,sk)
 
 parser = argparse.ArgumentParser(description="Automatic Speech Recognition with Baidu")
 parser.add_argument('--fn', type=str, default=None)
 args = parser.parse_args()
+# Ref: https://ai.baidu.com/docs#/ASR-API/top
+print("欢迎使用百度语音识别系统")
+print("Ref: https://ai.baidu.com/docs#/ASR-API/top")
 
 if args.fn is not None:
     fn = args.fn

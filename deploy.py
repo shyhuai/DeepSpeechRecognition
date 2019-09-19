@@ -5,7 +5,7 @@ import difflib
 import tensorflow as tf
 tf.logging.set_verbosity(tf.logging.ERROR)
 import numpy as np
-from utils import decode_ctc, GetEditDistance, assign_datasets
+from utils import decode_ctc, GetEditDistance, assign_datasets, readfiles
 import wave
 import socket
 import time
@@ -288,16 +288,19 @@ if __name__ == '__main__':
     serv.listen(5)
     conns = []
     lock = Lock()
-    # print("ServerIP: %s, Port: %d, Waiting connect ...\n" % (server_IP, server_PORT))
-    # conn, addr = serv.accept()
-    # data = conn.recv(4096)
     thread_serv = Thread(target=socketAccept, args=(serv, conns, lock,))
     thread_serv.start()
     print('Wait for connection....')
     time.sleep(10)
     if args.choose == 1:
         if args.fn is not None:
-            thefile = args.fn.split(',')
+            #thefile = args.fn.split(',')
+            fn = args.fn
+            if args.fn.endswith('.txt'):
+                thefile = readfiles(args.fn)
+            else:
+                thefile = args.fn.split(',')
+            fn = thefile
         if type(thefile) is list:
             for f in thefile:
                 print('f: ', f)

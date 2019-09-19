@@ -35,19 +35,19 @@ lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
 
-fn = [
-      "/Users/lele/work/testdata/D8_993.wav",
-      "/Users/lele/work/testdata/D8_994.wav",
-      "/Users/lele/work/testdata/D8_995.wav",
-      "/Users/lele/work/testdata/D8_996.wav", 
-      "/Users/lele/work/testdata/D8_997.wav",
-      "/Users/lele/work/testdata/D8_998.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0140.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0141.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0142.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0143.wav",
-      "/Users/lele/work/testdata/BAC009S0766W0144.wav",
-     ]
+#fn = [
+#      "/Users/lele/work/testdata/D8_993.wav",
+#      "/Users/lele/work/testdata/D8_994.wav",
+#      "/Users/lele/work/testdata/D8_995.wav",
+#      "/Users/lele/work/testdata/D8_996.wav", 
+#      "/Users/lele/work/testdata/D8_997.wav",
+#      "/Users/lele/work/testdata/D8_998.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0140.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0141.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0142.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0143.wav",
+#      "/Users/lele/work/testdata/BAC009S0766W0144.wav",
+#     ]
 #fn = [
 #      "/home/comp/15485625/speechrealtest/D8_993.wav",
 #      "/home/comp/15485625/speechrealtest/D8_994.wav",
@@ -124,6 +124,7 @@ test_data = get_data(data_args)
 pretestfile = thefile
 if type(thefile) is list:
     pretestfile = thefile[0]
+    #print('filelist: ', thefile)
 if not pretestfile.endswith('wav'):
     print("[Error*] The file is not in .wav format!")
 
