@@ -6,6 +6,7 @@ import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 import wave
 import socket
+import time
 import argparse
 from multiprocessing import Process
 from pyaudio import PyAudio,paInt16
@@ -42,15 +43,15 @@ TIME=10
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 DATASETS='thchs30,aishell,prime,stcmd'
-am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
-lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
+am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
+lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 
 #DATASETS='thchs30,aishell'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
-#fn = "/home/comp/15485625/speechrealtest/output4.wav"
-fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
+fn = "/Users/lele/work/testdata/D8_993.wav"
+#fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
 thefile = fn
 
 
@@ -214,15 +215,23 @@ def my_record():
     cnt = 0
     while 1:
         pa=PyAudio()
+        count=0
+        print('Please speak in 3 seconds...')
+        i = 0
+        while i < 3:
+            time.sleep(1)
+            print(3-i)
+            i += 1
+        print('Speaking...')
         stream=pa.open(format = paInt16,channels=1,
                        rate=framerate,input=True,
                        frames_per_buffer=NUM_SAMPLES)
         my_buf=[]
-        count=0
         while count<TIME*8:#控制录音时间
             string_audio_data = stream.read(NUM_SAMPLES)
             my_buf.append(string_audio_data)
             count+=1
+        print('Processing, please wait ...')
         save_wave_file('tmp{:04}.wav'.format(cnt), my_buf)
         #p = Process(target=save_wave_file, args=('tmp{:04}.wav'.format(cnt),my_buf),)
         #p.start()

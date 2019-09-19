@@ -15,7 +15,7 @@ audio_number = 1
 while True:
     from_server = client.recv(4096)
     modified_message = from_server.decode('utf-8')
-    ans = asp.synthesis(modified_message,'zh',1,{'vol':5,'per' : 2, 'pit' : 6,'spd' : 6,'cuid':123})
+    ans = asp.synthesis(modified_message,'zh',1,{'vol':5,'per' : 0, 'pit' : 6,'spd' : 6,'cuid':123})
     if not isinstance(ans, dict):
         with open(voice_path + '/n' + str(audio_number) + 'audio.wav','wb') as f:
             f.write(ans)

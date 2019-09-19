@@ -13,16 +13,25 @@ asp = AipSpeech(ai,ak,sk)
 #DATAPATH='/media/sf_Shared_Data/tmp/drchu/dsr/'
 #filename='output.wav'
 #fn = os.path.join(DATAPATH, filename)
-#fn = "/home/comp/15485625/speechrealtest/output4.wav"
-#fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
+#fn = "/home/comp/15485625/speechrealtest/output2.wav"
+#fn = "/Users/lele/work/testdata/output2.wav"
 fn = [
-      "/home/comp/15485625/speechrealtest/D8_993.wav",
-      "/home/comp/15485625/speechrealtest/D8_994.wav",
-      "/home/comp/15485625/speechrealtest/D8_995.wav",
-      "/home/comp/15485625/speechrealtest/D8_996.wav", 
-      "/home/comp/15485625/speechrealtest/D8_997.wav",
-      "/home/comp/15485625/speechrealtest/D8_998.wav",
-     ]
+        "./tmp/tmp0000.wav",
+        "./tmp/tmp0001.wav",
+        #"./tmp/tmp0002.wav",
+        #"./tmp/tmp0003.wav",
+        #"./tmp/tmp0004.wav",
+        ]
+
+#fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
+#fn = [
+#      "/home/comp/15485625/speechrealtest/D8_993.wav",
+#      "/home/comp/15485625/speechrealtest/D8_994.wav",
+#      "/home/comp/15485625/speechrealtest/D8_995.wav",
+#      "/home/comp/15485625/speechrealtest/D8_996.wav", 
+#      "/home/comp/15485625/speechrealtest/D8_997.wav",
+#      "/home/comp/15485625/speechrealtest/D8_998.wav",
+#     ]
 
 def get_file_content(filePath):
     with open(filePath, 'rb') as fp:
