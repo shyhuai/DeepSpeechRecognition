@@ -42,8 +42,10 @@ TIME=10
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 DATASETS='thchs30,aishell,prime,stcmd'
-am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
-lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
+#am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
+#lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
+am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
+lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 
 #DATASETS='thchs30,aishell'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
