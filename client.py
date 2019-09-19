@@ -5,8 +5,8 @@ import simpleaudio as sa
 import librosa
 import soundfile as sf
 
-#server_IP = '127.0.0.1'
-server_IP = '158.182.198.94'
+server_IP = '127.0.0.1'
+# server_IP = '158.182.198.94'
 server_PORT = 15678
 asp = AipSpeech(ai,ak,sk)
 voice_path = './client_voices'
