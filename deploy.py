@@ -1,7 +1,9 @@
 #coding=utf-8
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import difflib
 import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.ERROR)
 import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 import wave
@@ -45,10 +47,10 @@ TIME=10
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 DATASETS='thchs30,aishell,prime,stcmd'
-# am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
-# lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
-am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
-lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
+am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
+lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
+#am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
+#lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 
@@ -56,9 +58,9 @@ lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
-#fn = "/Users/lele/work/testdata/D8_993.wav"
+fn = "/Users/lele/work/testdata/D8_993.wav"
 #fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
-fn = "C:/Users/zhtang/Desktop/models/shshi/testdata/output4.wav"
+#fn = "C:/Users/zhtang/Desktop/models/shshi/testdata/output4.wav"
 thefile = fn
 
 
@@ -291,6 +293,8 @@ if __name__ == '__main__':
     # data = conn.recv(4096)
     thread_serv = Thread(target=socketAccept, args=(serv, conns, lock,))
     thread_serv.start()
+    print('Wait for connection....')
+    time.sleep(10)
     if args.choose == 1:
         if args.fn is not None:
             thefile = args.fn.split(',')

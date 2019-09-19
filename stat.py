@@ -25,21 +25,28 @@ logger.info('# of hanzi samples: %d', len(train_data.han_lst))
 logger.info('# of am vocal: %d', len(train_data.am_vocab))
 logger.info('# of pinyin vocal: %d', len(train_data.pny_vocab))
 logger.info('# of hanzi vocal: %d', len(train_data.han_vocab))
-logger.info('pny item: %s', train_data.pny_lst[0])
-logger.info('hanzi item: %s', train_data.han_lst[0][0])
 #logger.info('hanzi vocal: %s', train_data.han_vocab)
 
 pinyin_freq = {}
 hanzi_freq = {}
 
 def stat_freq(double_lst, freq_dict):
+    idx = 0
     for lst in double_lst:
         for i in lst:
             if not (i in freq_dict):
-                freq_dict[i] = 0
-            freq_dict[i] += 1
+                freq_dict[i] = idx
+                idx += 1
+            #freq_dict[i] += 1
+            #freq_dict[i] = 1
 stat_freq(train_data.pny_lst, pinyin_freq)
 stat_freq(train_data.han_lst, hanzi_freq)
 
-logger.info('pingyin freq: %s', pinyin_freq)
-logger.info('hanzi freq: %s', hanzi_freq)
+logger.info('pny item: %s', train_data.pny_lst[10])
+print([pinyin_freq[i] for i in train_data.pny_lst[10]])
+logger.info('hanzi item: %s', train_data.han_lst[10])
+print([hanzi_freq[i] for i in train_data.han_lst[10]])
+#print(pinyin_freq)
+#print(hanzi_freq)
+#logger.info('pingyin freq: %s', pinyin_freq)
+#logger.info('hanzi freq: %s', hanzi_freq)

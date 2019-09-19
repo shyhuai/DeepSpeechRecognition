@@ -6,19 +6,13 @@ ak = 'H8BcNhFKMhmlwynyUB4YegOI'
 ai = '10469665'
 sk = '3272504460441b5bd0d8c43294418b7a'
 
+# Ref: https://ai.baidu.com/docs#/ASR-API/top
+
 import wave
 from aip import AipSpeech
 asp = AipSpeech(ai,ak,sk)
 
-#DATAPATH='/media/sf_Shared_Data/tmp/drchu/dsr/'
-#filename='output.wav'
-#fn = os.path.join(DATAPATH, filename)
-#fn = "/home/comp/15485625/speechrealtest/output2.wav"
-#fn = "/Users/lele/work/testdata/output.wav"
-#fn = [
-#        "./tmp/tmp0000.wav",
-#        "./tmp/tmp0001.wav",
-#        ]
+
 fn = [
       "/Users/lele/work/testdata/BAC009S0766W0140.wav",
       "/Users/lele/work/testdata/BAC009S0766W0141.wav",

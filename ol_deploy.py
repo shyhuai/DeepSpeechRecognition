@@ -1,7 +1,9 @@
 #coding=utf-8
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import difflib
 import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.ERROR)
 import numpy as np
 from utils import decode_ctc, GetEditDistance, assign_datasets
 import wave
@@ -21,6 +23,7 @@ lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 #fn = "/home/comp/15485625/speechrealtest/output4.wav"
 #fn = "/Users/lele/work/testdata/D8_993.wav"
 #fn = "/Users/lele/work/testdata/output.wav"
+
 fn = [
       "/Users/lele/work/testdata/D8_993.wav",
       "/Users/lele/work/testdata/D8_994.wav",
@@ -44,8 +47,6 @@ from utils import get_data, data_hparams
 data_args = data_hparams()
 data_args.data_type = 'train'
 assign_datasets(datasets, data_args)
-#data_args.thchs30 = True
-#data_args.aishell = True
 data_args.data_path = data_dir 
 data_args.data_length = None
 train_data = get_data(data_args)
