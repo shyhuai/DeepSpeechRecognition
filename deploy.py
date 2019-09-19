@@ -10,8 +10,9 @@ import time
 import argparse
 from multiprocessing import Process
 from pyaudio import PyAudio,paInt16
-#server_IP = '127.0.0.1'
-server_IP = '158.182.198.94'
+from threading import Thread, Lock
+server_IP = '127.0.0.1'
+# server_IP = '158.182.198.94'
 server_PORT = 15678
 
 framerate=16000
@@ -44,10 +45,10 @@ TIME=10
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 DATASETS='thchs30,aishell,prime,stcmd'
-am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
-lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
-#am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
-#lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
+# am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
+# lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
+am_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata/alldata_model.h5'
+lm_trained_model='C:/Users/zhtang/Desktop/models/shshi/checkpoint-alldata-lm'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 
@@ -55,8 +56,9 @@ lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
-fn = "/Users/lele/work/testdata/D8_993.wav"
+#fn = "/Users/lele/work/testdata/D8_993.wav"
 #fn = "/home/comp/15485625/speechrealtest/D8_993.wav"
+fn = "C:/Users/zhtang/Desktop/models/shshi/testdata/output4.wav"
 thefile = fn
 
 
@@ -117,7 +119,7 @@ test_data = get_data(data_args)
 #thefile = "/home/comp/15485625/chuyi_sunjiaman_mono.wav"
 #thefile = "/home/comp/15485625/speechrealtest/leletest2.wav"
 #thefile = "/home/comp/15485625/data/speech/sp2chs/data_aishell/wav/test/S0765/BAC009S0765W0121.wav"
-def predict(thefile):
+def predict(thefile, conns, lock):
     if not thefile.endswith('wav'):
         print("[Error*] The file is not in .wav format!")
     testfile = wave.open(thefile, mode='rb')
@@ -169,9 +171,15 @@ def predict(thefile):
                 got = ''.join(train_data.han_vocab[idx] for idx in preds[0])
                 #print('原文汉字：', label)
                 #print('识别结果：', got)
-                modified_RecvMessage = data.decode('utf-8')
+                # modified_RecvMessage = data.decode('utf-8')
                 #print(modified_RecvMessage)
-                conn.send((got+':').encode('utf-8'))
+                lock.acquire()
+                for conn in conns:
+                    try:
+                        conn.send((got+':').encode('utf-8'))
+                    except Exception as e:
+                        pass
+                lock.release()
                 print('%s: %s' % (filelist[i], got))
                 #word_error_num += min(len(label), GetEditDistance(label, got))
                 #word_num += len(label)
@@ -198,15 +206,21 @@ def predict(thefile):
             got = ''.join(train_data.han_vocab[idx] for idx in preds[0])
             #print('原文汉字：', label)
             #print('识别结果：', got)
-            modified_RecvMessage = data.decode('utf-8')
+            # modified_RecvMessage = data.decode('utf-8')
             #print(modified_RecvMessage)
-            conn.send((got+':').encode('utf-8'))
+            lock.acquire()
+            for conn in conns:
+                try:
+                    conn.send((got+':').encode('utf-8'))
+                except Exception as e:
+                    pass
+            lock.release()
             print('%s: %s' % (filelist[0], got))
             #word_error_num += min(len(label), GetEditDistance(label, got))
             #word_num += len(label)
     # conn.send('end11112222'.decode('utf-8'))
 
-def save_wave_file(filename,data):
+def save_wave_file(filename, data, conns, lock):
     '''save the date to the wavfile'''
     wf=wave.open("./tmp/" + filename,'wb')
     wf.setnchannels(channels)
@@ -214,9 +228,9 @@ def save_wave_file(filename,data):
     wf.setframerate(framerate)
     wf.writeframes(b"".join(data))
     wf.close()
-    predict("./tmp/" + filename)
+    predict("./tmp/" + filename, conns, lock)
 
-def my_record():
+def my_record(conns, lock):
     cnt = 0
     while 1:
         pa=PyAudio()
@@ -237,11 +251,27 @@ def my_record():
             my_buf.append(string_audio_data)
             count+=1
         print('Processing, please wait ...')
-        save_wave_file('tmp{:04}.wav'.format(cnt), my_buf)
+        save_wave_file('tmp{:04}.wav'.format(cnt), my_buf, conns, lock)
         #p = Process(target=save_wave_file, args=('tmp{:04}.wav'.format(cnt),my_buf),)
         #p.start()
         stream.close()
         cnt = cnt + 1
+
+def socketAccept(s, conns, lock):
+    while 1:
+        try:
+            time.sleep(0.5)
+            conn, addr = s.accept()
+        except Exception as e:
+            pass
+        else:
+            print("[*]User [%s:%s] is Online" % (addr[0],str(addr[1])))
+            lock.acquire()
+            conns.append(conn)
+            lock.release()
+            # t = Thread(target=socketWorking,args=(sT,addr,))
+            # threadsList.append(t)
+            # t.start()
 
 if __name__ == '__main__':
 
@@ -251,22 +281,27 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serv.setblocking(False)
     serv.bind((server_IP, server_PORT))
     serv.listen(5)
-    print("ServerIP: %s, Port: %d, Waiting connect ...\n" % (server_IP, server_PORT))
-    conn, addr = serv.accept()
-    data = conn.recv(4096)
+    conns = []
+    lock = Lock()
+    # print("ServerIP: %s, Port: %d, Waiting connect ...\n" % (server_IP, server_PORT))
+    # conn, addr = serv.accept()
+    # data = conn.recv(4096)
+    thread_serv = Thread(target=socketAccept, args=(serv, conns, lock,))
+    thread_serv.start()
     if args.choose == 1:
         if args.fn is not None:
             thefile = args.fn.split(',')
         if type(thefile) is list:
             for f in thefile:
                 print('f: ', f)
-                predict(f)
+                predict(f, conns, lock)
         else:
-            predict(thefile)
+            predict(thefile, conns, lock)
     elif args.choose ==2:
-        my_record()
-
-    conn.close()
+        my_record(conns, lock)
+    for conn in conns:
+        conn.close()
     sess.close()
