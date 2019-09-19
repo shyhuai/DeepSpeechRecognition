@@ -14,11 +14,24 @@ asp = AipSpeech(ai,ak,sk)
 #filename='output.wav'
 #fn = os.path.join(DATAPATH, filename)
 #fn = "/home/comp/15485625/speechrealtest/output2.wav"
-fn = "/Users/lele/work/testdata/output.wav"
+#fn = "/Users/lele/work/testdata/output.wav"
 #fn = [
 #        "./tmp/tmp0000.wav",
 #        "./tmp/tmp0001.wav",
 #        ]
+fn = [
+      "/Users/lele/work/testdata/BAC009S0766W0140.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0141.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0142.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0143.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0144.wav",
+      "/Users/lele/work/testdata/D8_993.wav",
+      "/Users/lele/work/testdata/D8_994.wav",
+      "/Users/lele/work/testdata/D8_995.wav",
+      "/Users/lele/work/testdata/D8_996.wav", 
+      "/Users/lele/work/testdata/D8_997.wav",
+      "/Users/lele/work/testdata/D8_998.wav",
+     ]
 
 #fn = [
 #      "/home/comp/15485625/speechrealtest/D8_993.wav",

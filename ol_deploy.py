@@ -20,20 +20,20 @@ lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
 #fn = "/home/comp/15485625/speechrealtest/output4.wav"
 #fn = "/Users/lele/work/testdata/D8_993.wav"
-fn = "/Users/lele/work/testdata/output.wav"
-#fn = [
-#      "/home/comp/15485625/speechrealtest/D8_993.wav",
-#      "/home/comp/15485625/speechrealtest/D8_994.wav",
-#      "/home/comp/15485625/speechrealtest/D8_995.wav",
-#      "/home/comp/15485625/speechrealtest/D8_996.wav", 
-#      "/home/comp/15485625/speechrealtest/D8_997.wav",
-#      "/home/comp/15485625/speechrealtest/D8_998.wav",
-#      "/home/comp/15485625/speechrealtest/BAC009S0766W0140.wav",
-#      "/home/comp/15485625/speechrealtest/BAC009S0766W0141.wav",
-#      "/home/comp/15485625/speechrealtest/BAC009S0766W0142.wav",
-#      "/home/comp/15485625/speechrealtest/BAC009S0766W0143.wav",
-#      "/home/comp/15485625/speechrealtest/BAC009S0766W0144.wav",
-#     ]
+#fn = "/Users/lele/work/testdata/output.wav"
+fn = [
+      "/Users/lele/work/testdata/D8_993.wav",
+      "/Users/lele/work/testdata/D8_994.wav",
+      "/Users/lele/work/testdata/D8_995.wav",
+      "/Users/lele/work/testdata/D8_996.wav", 
+      "/Users/lele/work/testdata/D8_997.wav",
+      "/Users/lele/work/testdata/D8_998.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0140.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0141.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0142.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0143.wav",
+      "/Users/lele/work/testdata/BAC009S0766W0144.wav",
+     ]
 
 #fn = "/home/comp/15485625/speechrealtest/D8_995.wav"
 thefile = fn
@@ -108,7 +108,7 @@ am_batch = ''
 framerate = testfile.getframerate()
 framenum = testfile.getnframes()
 length = framenum/framerate
-print("The length of {} is {} seconds.".format(thefile, length))
+#print("The length of {} is {} seconds.".format(thefile, length))
 max_len = 10
 if type(thefile) is not list and length > max_len:
     piece_len = max_len #(max_len // 3) * 2
