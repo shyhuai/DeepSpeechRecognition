@@ -10,7 +10,8 @@ import time
 import argparse
 from multiprocessing import Process
 from pyaudio import PyAudio,paInt16
-server_IP = '127.0.0.1'
+#server_IP = '127.0.0.1'
+server_IP = '158.182.198.94'
 server_PORT = 15678
 
 framerate=16000
@@ -252,13 +253,18 @@ if __name__ == '__main__':
     serv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serv.bind((server_IP, server_PORT))
     serv.listen(5)
-    print("waiting connect=====================================\n")
+    print("ServerIP: %s, Port: %d, Waiting connect ...\n" % (server_IP, server_PORT))
     conn, addr = serv.accept()
     data = conn.recv(4096)
     if args.choose == 1:
         if args.fn is not None:
-            thefile = args.fn
-        predict(thefile)
+            thefile = args.fn.split(',')
+        if type(thefile) is list:
+            for f in thefile:
+                print('f: ', f)
+                predict(f)
+        else:
+            predict(thefile)
     elif args.choose ==2:
         my_record()
 

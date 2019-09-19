@@ -48,17 +48,3 @@ while True:
     audio_number +=1
 
 client.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-

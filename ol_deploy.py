@@ -9,27 +9,31 @@ import wave
 data_dir='/home/comp/15485625/data/speech/sp2chs'
 # 0.准备解码所需字典，参数需和训练一致，也可以将字典保存到本地，直接进行读取
 DATASETS='thchs30,aishell,prime,stcmd'
-am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
-lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
+am_trained_model='/Users/lele/work/models/checkpoint-alldata/alldata_model.h5'
+lm_trained_model='/Users/lele/work/models/checkpoint-alldata-lm'
+#am_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata/alldata_model.h5'
+#lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-alldata-lm'
 
 #DATASETS='thchs30,aishell'
 #am_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24/thchs30-aishell-finetune2_model.h5'
 #lm_trained_model='/home/comp/15485625/checkpoints/checkpoint-aishell-finetune-6.24'
 #fn = "/home/comp/15485625/speechrealtest/leletest2.wav"
 #fn = "/home/comp/15485625/speechrealtest/output4.wav"
-fn = [
-      "/home/comp/15485625/speechrealtest/D8_993.wav",
-      "/home/comp/15485625/speechrealtest/D8_994.wav",
-      "/home/comp/15485625/speechrealtest/D8_995.wav",
-      "/home/comp/15485625/speechrealtest/D8_996.wav", 
-      "/home/comp/15485625/speechrealtest/D8_997.wav",
-      "/home/comp/15485625/speechrealtest/D8_998.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0140.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0141.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0142.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0143.wav",
-      "/home/comp/15485625/speechrealtest/BAC009S0766W0144.wav",
-     ]
+#fn = "/Users/lele/work/testdata/D8_993.wav"
+fn = "/Users/lele/work/testdata/output.wav"
+#fn = [
+#      "/home/comp/15485625/speechrealtest/D8_993.wav",
+#      "/home/comp/15485625/speechrealtest/D8_994.wav",
+#      "/home/comp/15485625/speechrealtest/D8_995.wav",
+#      "/home/comp/15485625/speechrealtest/D8_996.wav", 
+#      "/home/comp/15485625/speechrealtest/D8_997.wav",
+#      "/home/comp/15485625/speechrealtest/D8_998.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0140.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0141.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0142.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0143.wav",
+#      "/home/comp/15485625/speechrealtest/BAC009S0766W0144.wav",
+#     ]
 
 #fn = "/home/comp/15485625/speechrealtest/D8_995.wav"
 thefile = fn
