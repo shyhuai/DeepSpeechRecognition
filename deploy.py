@@ -13,8 +13,8 @@ import argparse
 from multiprocessing import Process
 from pyaudio import PyAudio,paInt16
 from threading import Thread, Lock
-server_IP = '127.0.0.1'
-# server_IP = '158.182.198.94'
+#server_IP = '127.0.0.1'
+server_IP = '158.182.198.94'
 server_PORT = 15678
 
 framerate=16000
